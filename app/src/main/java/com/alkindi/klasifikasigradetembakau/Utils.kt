@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import java.io.File
@@ -53,7 +54,8 @@ fun saveCorrectlyOrientedImage(context: Context, imageUri: Uri) {
 
     val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
 
-    val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+    val orientation =
+        exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
     val rotationDegrees = when (orientation) {
         ExifInterface.ORIENTATION_ROTATE_90 -> 90f
         ExifInterface.ORIENTATION_ROTATE_180 -> 180f
@@ -74,4 +76,8 @@ fun saveCorrectlyOrientedImage(context: Context, imageUri: Uri) {
     rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream!!)
     outputStream.flush()
     outputStream.close()
+}
+
+fun showToastShort(msg: String, context: Context) {
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }

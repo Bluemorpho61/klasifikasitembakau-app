@@ -13,12 +13,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-//import org.opencv.android.OpenCVLoader
-//import org.opencv.android.Utils
-//import org.opencv.core.Core
-//import org.opencv.core.Mat
-//import org.opencv.core.Size
-//import org.opencv.imgproc.Imgproc
+import org.opencv.android.OpenCVLoader
+import org.opencv.android.Utils
+import org.opencv.core.Core
+import org.opencv.core.Mat
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.common.ops.NormalizeOp
@@ -26,6 +26,7 @@ import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import androidx.core.graphics.createBitmap
 
 class MainViewModel(
     application: Application
@@ -51,20 +52,19 @@ class MainViewModel(
     }
 
     private fun setupOpenCV() {
-//        if (!OpenCVLoader.initLocal()) {
-//            Log.e(TAG, "OpenCV gagal di inisialisasi")
-//            _errorMsg.postValue("Gagal menginisialisasi OpenCV")
-//        } else {
-//            Log.d(TAG, "OpenCV berhasil di inisialisasi")
+        if (!OpenCVLoader.initLocal()) {
+            Log.e(TAG, "OpenCV gagal di inisialisasi")
+            _errorMsg.postValue("Gagal menginisialisasi OpenCV")
+        } else {
+            Log.d(TAG, "OpenCV berhasil di inisialisasi")
             setupImageClassifier()
-//        }
+        }
     }
 
     private fun setupImageClassifier() {
         try {
             val modelBuffer = FileUtil.loadMappedFile(getApplication(), modelName)
             interpreter = Interpreter(modelBuffer, Interpreter.Options())
-
             labels = FileUtil.loadLabels(getApplication(), labelsName)
         } catch (e: Exception) {
             _errorMsg.postValue("Gagal menginisialisasi classifier: ${e.message}")
@@ -72,7 +72,7 @@ class MainViewModel(
         }
     }
 
-//    TODO: UBAH FUNCTION GAMBAR MENJADI BITMAP
+
 
     fun getImgToClassify(imgUri: Uri) {
         viewModelScope.launch {
@@ -87,39 +87,45 @@ class MainViewModel(
                     return@launch
                 }
 
-//                val rgbMat = Mat()
-//                Utils.bitmapToMat(originalBitmap, rgbMat)
-//                Imgproc.cvtColor(rgbMat, rgbMat, Imgproc.COLOR_RGBA2RGB)
-//
-//                val labMat = Mat()
-//                Imgproc.cvtColor(rgbMat, labMat, Imgproc.COLOR_RGB2Lab)
-//
-//                val labChannels = ArrayList<Mat>()
-//                Core.split(labMat, labChannels)
-//                val lChannel = labChannels[0]
-//
-//                val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
-//                val lClahe = Mat()
-//                clahe.apply(lChannel, lClahe)
-//
-//                labChannels[0] = lClahe
-//                val labClaheMat = Mat()
-//                Core.merge(labChannels, labClaheMat)
-//
-//                val rgbClaheMat = Mat()
-//                Imgproc.cvtColor(labClaheMat, rgbClaheMat, Imgproc.COLOR_Lab2RGB)
-//
-//                val claheBitmap = Bitmap.createBitmap(
-//                    originalBitmap.width,
-//                    originalBitmap.height,
-//                    Bitmap.Config.ARGB_8888
-//                )
+                val rgbMat = Mat()
+                Utils.bitmapToMat(originalBitmap, rgbMat)
+                Imgproc.cvtColor(rgbMat, rgbMat, Imgproc.COLOR_RGBA2RGB)
+
+                val labMat = Mat()
+                Imgproc.cvtColor(rgbMat, labMat, Imgproc.COLOR_RGB2Lab)
+
+                val labChannels = ArrayList<Mat>()
+                Core.split(labMat, labChannels)
+                val lChannel = labChannels[0]
+
+                val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
+                val lClahe = Mat()
+                clahe.apply(lChannel, lClahe)
+
+                labChannels[0] = lClahe
+                val labClaheMat = Mat()
+                Core.merge(labChannels, labClaheMat)
+
+                val rgbClaheMat = Mat()
+                Imgproc.cvtColor(labClaheMat, rgbClaheMat, Imgproc.COLOR_Lab2RGB)
+
+                val claheBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
+                Utils.matToBitmap(rgbClaheMat,claheBitmap)
+
+                rgbMat.release()
+                labMat.release()
+                lChannel.release()
+                lClahe.release()
+                labClaheMat.release()
+                rgbClaheMat.release()
+                labChannels.clear()
+
                 val imageProcessor = ImageProcessor.Builder()
                     .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
                     .add(NormalizeOp(0f, 255f))
                     .build()
 
-                var tensorImage = TensorImage.fromBitmap(originalBitmap)
+                var tensorImage = TensorImage.fromBitmap(claheBitmap)
                 tensorImage = imageProcessor.process(tensorImage)
 
                 val outputShape = interpreter.getOutputTensor(0).shape()

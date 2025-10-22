@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">KlasifikasiGradeTembakau</string>
-    <string name="app_title">Sistem Pengklasifikasian Tembakau</string>
+    <string name="app_title">Sistem Pengklasifikasian Grade Tembakau</string>
     <string name="image_classifier_failed">Klasifikasi Citra Gagal!</string>
 </resources>

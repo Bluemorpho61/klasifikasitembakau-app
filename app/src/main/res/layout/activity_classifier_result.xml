@@ -39,6 +39,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvResultLabel" />
 
     <LinearLayout
+        android:id="@+id/tvHasilKlasifikasi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -47,18 +48,67 @@
         <TextView
             android:id="@+id/tobaccoGradeLabel"
             android:layout_width="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
             android:layout_height="wrap_content"
-            android:text="Tobacco Grade: " />
+            android:text="Grade Tembakau: "
+            android:textSize="20sp"
+            android:textStyle="normal" />
 
         <TextView
             android:id="@+id/gradeLetter"
             android:layout_width="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
             android:layout_height="wrap_content"
-            android:text="A" />
+            android:text="*Loading"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tvNilaiAkurasi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/tvHasilKlasifikasi">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score:"
+            android:textSize="20sp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/tvScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*Loading"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tvNilaiAkurasi">-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Waktu Inferensi: "-->
+<!--            android:textSize="20sp"-->
+<!--            android:textStyle="normal" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvInferenceTime"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="*Loading"-->
+<!--            android:textSize="20sp"-->
+<!--            android:textStyle="bold" />-->
+<!--    </LinearLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

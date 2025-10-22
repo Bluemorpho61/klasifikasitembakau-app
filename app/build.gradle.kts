@@ -54,15 +54,13 @@ dependencies {
 //    implementation(libs.tensorflow.lite.support)
 //    implementation(libs.tensorflow.lite.metadata)
 //    implementation(libs.tensorflow.lite.task.vision)
+//    implementation("com.quickbirdstudios:opencv:4.6.0")
     implementation("org.tensorflow:tensorflow-lite:2.13.0")
     implementation("org.tensorflow:tensorflow-lite-api:2.13.0")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
     implementation(libs.tensorflow.lite.metadata)
     implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.4")
-
-//    implementation("dependency-that-brings-tflite") {
-//        exclude group:
-//    }
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
 
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <ImageView
         android:id="@+id/imPolije"
@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
-        android:text="Silahkan ambil sampel tembakau untuk diproses. Tempatkan sampel pada kertas berwarna putih"
+        android:text="Silahkan ambil sampel tembakau untuk diproses. Tempatkan sampel pada kertas berwarna putih dan usahakan berada pada pencahayaan yang cukup"
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/imCitra" />
 
@@ -54,7 +54,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvInstruction"/>
+        app:layout_constraintTop_toBottomOf="@id/tvInstruction" />
 
     <LinearLayout
         android:id="@+id/btnOpenImg"
@@ -93,6 +93,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnOpenImg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnConfirm"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/luxMeter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lux: "
+            android:textSize="24sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/luxMeterValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:text="232323"
+            android:textSize="24sp"/>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,10 @@
-package com.alkindi.klasifikasigradetembakau
+package com.alkindi.klasifikasigradetembakau.activity
 
 import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -15,13 +19,18 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.alkindi.klasifikasigradetembakau.databinding.ActivityMainBinding
+import com.alkindi.klasifikasigradetembakau.getImageUri
+import com.alkindi.klasifikasigradetembakau.saveCorrectlyOrientedImage
 import com.alkindi.klasifikasigradetembakau.viewmodel.MainViewModel
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private var currentImageUri: Uri? = null
+
+    private lateinit var sensorManager: SensorManager
+    private var sensorLight: Sensor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +38,18 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         enableEdgeToEdge()
         setContentView(view)
+
+
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        sensorLight = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        if (sensorLight == null) showToast("Sensor cahaya tidak ditemukan pada perangkat ini")
+        binding.luxMeterValue.text = "Sensor tidak ditemukan"
         observeViewModelData()
 
         binding.btnConfirm.setOnClickListener {
@@ -69,7 +83,6 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.classificationResult.observe(this) { res ->
             if (res != null) {
-//                val classificationResult = res.first //SAYA MENDAPAT ERROR DISINI
                 val label = res.first
                 val score = res.second
 
@@ -82,6 +95,10 @@ class MainActivity : AppCompatActivity() {
                     inferenceTime = inferenceTime
                 )
             }
+        }
+
+        viewModel.luxValue.observe(this) { lux ->
+            binding.luxMeterValue.text ="${lux.toInt()} Lux"
         }
     }
 
@@ -145,6 +162,30 @@ class MainActivity : AppCompatActivity() {
         binding.btnConfirm.visibility = View.VISIBLE
         binding.tvInstruction.visibility = View.GONE
     }
+
+    override fun onResume() {
+        super.onResume()
+        sensorLight?.let { sensor ->
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_LIGHT) {
+            val lux = event.values[0]
+            viewModel.updateLux(lux)
+        }
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        
+    }
+
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName

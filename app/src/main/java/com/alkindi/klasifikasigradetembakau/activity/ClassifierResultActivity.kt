@@ -1,4 +1,4 @@
-package com.alkindi.klasifikasigradetembakau
+package com.alkindi.klasifikasigradetembakau.activity
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

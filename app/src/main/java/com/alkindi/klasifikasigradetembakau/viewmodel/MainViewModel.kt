@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,7 +27,6 @@ import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
-import androidx.core.graphics.createBitmap
 
 class MainViewModel(
     application: Application
@@ -39,6 +39,9 @@ class MainViewModel(
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _luxValue = MutableLiveData<Float>()
+    val luxValue: LiveData<Float> = _luxValue
 
     private val _errorMsg = MutableLiveData<String>()
     val errorMsg: LiveData<String> = _errorMsg
@@ -61,6 +64,10 @@ class MainViewModel(
         }
     }
 
+    fun updateLux(value: Float) {
+        _luxValue.postValue(value)
+    }
+
     private fun setupImageClassifier() {
         try {
             val modelBuffer = FileUtil.loadMappedFile(getApplication(), modelName)
@@ -71,7 +78,6 @@ class MainViewModel(
             Log.e(TAG, "Error Initializing Classifier ", e)
         }
     }
-
 
 
     fun getImgToClassify(imgUri: Uri) {
@@ -110,7 +116,7 @@ class MainViewModel(
                 Imgproc.cvtColor(labClaheMat, rgbClaheMat, Imgproc.COLOR_Lab2RGB)
 
                 val claheBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
-                Utils.matToBitmap(rgbClaheMat,claheBitmap)
+                Utils.matToBitmap(rgbClaheMat, claheBitmap)
 
                 rgbMat.release()
                 labMat.release()

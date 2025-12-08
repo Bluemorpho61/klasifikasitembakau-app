@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    tools:context=".ClassifierResultActivity">
+    tools:context=".activity.ClassifierResultActivity">
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -16,6 +16,16 @@
         android:src="@drawable/outline_arrow_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnDebugActivity"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@null"
+        android:src="@drawable/outline_bug_report_24"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteY="10dp" />
 
     <TextView
         android:id="@+id/tvResultLabel"

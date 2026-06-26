@@ -64,10 +64,6 @@ class MainViewModel(
         }
     }
 
-    fun updateLux(value: Float) {
-        _luxValue.postValue(value)
-    }
-
     private fun setupImageClassifier() {
         try {
             val modelBuffer = FileUtil.loadMappedFile(getApplication(), modelName)
@@ -77,6 +73,10 @@ class MainViewModel(
             _errorMsg.postValue("Gagal menginisialisasi classifier: ${e.message}")
             Log.e(TAG, "Error Initializing Classifier ", e)
         }
+    }
+
+    fun updateLux(value: Float) {
+        _luxValue.postValue(value)
     }
 
 

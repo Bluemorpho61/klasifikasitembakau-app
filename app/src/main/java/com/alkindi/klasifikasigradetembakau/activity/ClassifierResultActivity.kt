@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.alkindi.klasifikasigradetembakau.databinding.ActivityClassifierResultBinding
+import com.bumptech.glide.Glide
 
 class ClassifierResultActivity : AppCompatActivity() {
     private lateinit var binding: ActivityClassifierResultBinding
@@ -33,7 +34,11 @@ class ClassifierResultActivity : AppCompatActivity() {
 
         if (imgUri != null && label != null) {
             val imageUri = imgUri.toUri()
-            binding.imCitra.setImageURI(imageUri)
+            Glide.with(this)
+                .load(imageUri)
+                .override(1000,1000)
+                .into(binding.imCitra)
+//            binding.imCitra.setImageURI(imageUri)
             binding.gradeLetter.text = label
             binding.tvScore.text = score.toString()
 //            binding.tvInferenceTime.text =inferenceTime.toString()

@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.tensorflow.lite.metadata)
     implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
 
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)

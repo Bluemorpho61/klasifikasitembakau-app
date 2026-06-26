@@ -22,6 +22,7 @@ import com.alkindi.klasifikasigradetembakau.databinding.ActivityMainBinding
 import com.alkindi.klasifikasigradetembakau.getImageUri
 import com.alkindi.klasifikasigradetembakau.saveCorrectlyOrientedImage
 import com.alkindi.klasifikasigradetembakau.viewmodel.MainViewModel
+import com.bumptech.glide.Glide
 
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
@@ -153,7 +154,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private fun showImage() {
         currentImageUri?.let {
             Log.d(TAG, "Show Image: $it")
-            binding.imCitra.setImageURI(it)
+//            binding.imCitra.setImageURI(it)
+            Glide.with(this)
+                .load(it)
+                .override(1000,1000)
+                .into(binding.imCitra)
         }
         hideNshowComponentAfterSelectingImage()
     }

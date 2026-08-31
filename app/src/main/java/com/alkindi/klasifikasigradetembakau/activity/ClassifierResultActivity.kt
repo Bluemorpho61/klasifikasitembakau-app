@@ -50,6 +50,5 @@ class ClassifierResultActivity : AppCompatActivity() {
         const val EXTRA_LABEL = "extra_image_label"
         const val EXTRA_INFERENCE_TIME = "extra_inference_time"
         const val EXTRA_SCORE = "extra_score"
-        private val TAG = ClassifierResultActivity::class.java.simpleName
     }
 }

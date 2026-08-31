@@ -2,4 +2,9 @@
     <string name="app_name">KlasifikasiGradeTembakau</string>
     <string name="app_title">Sistem Pengklasifikasian Grade Tembakau</string>
     <string name="image_classifier_failed">Klasifikasi Citra Gagal!</string>
+    <string name="sensor_not_found">Sensor tidak ditemukan</string>
+    <string name="lux_value">%1$d Lux</string>
+    <string name="sensor_light_not_found">Sensor cahaya tidak ditemukan pada perangkat ini</string>
+    <string name="please_select_image">Silahkan Pilih Gambar Terlebih Dahulu</string>
+    <string name="classifying">Mengklasifikasi&#8230;</string>
 </resources>

@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.alkindi.klasifikasigradetembakau.R
 import com.alkindi.klasifikasigradetembakau.databinding.ActivityMainBinding
 import com.alkindi.klasifikasigradetembakau.getImageUri
 import com.alkindi.klasifikasigradetembakau.saveCorrectlyOrientedImage
@@ -49,15 +50,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         sensorLight = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-        if (sensorLight == null) showToast("Sensor cahaya tidak ditemukan pada perangkat ini")
-        binding.luxMeterValue.text = "Sensor tidak ditemukan"
+        if (sensorLight == null) showToast(getString(R.string.sensor_light_not_found))
+        binding.luxMeterValue.text = getString(R.string.sensor_not_found)
         observeViewModelData()
 
         binding.btnConfirm.setOnClickListener {
             currentImageUri?.let {
                 analyzeImage(it)
             } ?: run {
-                showToast("Silahkan Pilih Gambar Terlebih Dahulu")
+                showToast(getString(R.string.please_select_image))
             }
         }
 
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     private fun observeViewModelData() {
         viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBarClassify.isVisible = isLoading
+            binding.loadingOverlay.isVisible = isLoading
             binding.btnConfirm.isVisible = !isLoading
         }
 
@@ -95,11 +96,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     score = score,
                     inferenceTime = inferenceTime
                 )
+                viewModel.resetClassificationResult()
             }
         }
 
         viewModel.luxValue.observe(this) { lux ->
-            binding.luxMeterValue.text ="${lux.toInt()} Lux"
+            binding.luxMeterValue.text = getString(R.string.lux_value, lux.toInt())
         }
     }
 

@@ -13,7 +13,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.opencv.android.OpenCVLoader
 import org.opencv.android.Utils
 import org.opencv.core.Core
@@ -79,90 +81,93 @@ class MainViewModel(
         _luxValue.postValue(value)
     }
 
+    fun resetClassificationResult() {
+        _classificationResult.value = null
+    }
+
 
     fun getImgToClassify(imgUri: Uri) {
         viewModelScope.launch {
             _isLoading.postValue(true)
-
-            val startTime = SystemClock.uptimeMillis()
-            try {
-                val originalBitmap = toBitmap(imgUri)
-                if (originalBitmap == null) {
-                    _errorMsg.postValue("Gagal mengambil URI Gambar")
-                    _isLoading.postValue(false)
-                    return@launch
-                }
-
-                val rgbMat = Mat()
-                Utils.bitmapToMat(originalBitmap, rgbMat)
-                Imgproc.cvtColor(rgbMat, rgbMat, Imgproc.COLOR_RGBA2RGB)
-
-                val labMat = Mat()
-                Imgproc.cvtColor(rgbMat, labMat, Imgproc.COLOR_RGB2Lab)
-
-                val labChannels = ArrayList<Mat>()
-                Core.split(labMat, labChannels)
-                val lChannel = labChannels[0]
-
-                val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
-                val lClahe = Mat()
-                clahe.apply(lChannel, lClahe)
-
-                labChannels[0] = lClahe
-                val labClaheMat = Mat()
-                Core.merge(labChannels, labClaheMat)
-
-                val rgbClaheMat = Mat()
-                Imgproc.cvtColor(labClaheMat, rgbClaheMat, Imgproc.COLOR_Lab2RGB)
-
-                val claheBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
-                Utils.matToBitmap(rgbClaheMat, claheBitmap)
-
-                rgbMat.release()
-                labMat.release()
-                lChannel.release()
-                lClahe.release()
-                labClaheMat.release()
-                rgbClaheMat.release()
-                labChannels.clear()
-
-                val imageProcessor = ImageProcessor.Builder()
-                    .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
-                    .add(NormalizeOp(0f, 255f))
-                    .build()
-
-                var tensorImage = TensorImage.fromBitmap(claheBitmap)
-                tensorImage = imageProcessor.process(tensorImage)
-
-                val outputShape = interpreter.getOutputTensor(0).shape()
-                val outputDataType = interpreter.getOutputTensor(0).dataType()
-                val outputBuffer = TensorBuffer.createFixedSize(outputShape, outputDataType)
-
-                interpreter.run(tensorImage.buffer, outputBuffer.buffer.rewind())
-
-                val scores = outputBuffer.floatArray
-                var maxScore = -1f
-                var maxIndex = -1
-                scores.forEachIndexed { index, score ->
-                    if (score > maxScore) {
-                        maxScore = score
-                        maxIndex = index
+            withContext(Dispatchers.Default) {
+                val startTime = SystemClock.uptimeMillis()
+                try {
+                    val originalBitmap = toBitmap(imgUri)
+                    if (originalBitmap == null) {
+                        _errorMsg.postValue("Gagal mengambil URI Gambar")
+                        return@withContext
                     }
-                }
 
-                if (maxIndex != -1) {
-                    val resultLabel = labels[maxIndex]
-                    _classificationResult.postValue(Pair(resultLabel, maxScore))
+                    val rgbMat = Mat()
+                    Utils.bitmapToMat(originalBitmap, rgbMat)
+                    Imgproc.cvtColor(rgbMat, rgbMat, Imgproc.COLOR_RGBA2RGB)
+
+                    val labMat = Mat()
+                    Imgproc.cvtColor(rgbMat, labMat, Imgproc.COLOR_RGB2Lab)
+
+                    val labChannels = ArrayList<Mat>()
+                    Core.split(labMat, labChannels)
+                    val lChannel = labChannels[0]
+
+                    val clahe = Imgproc.createCLAHE(2.0, Size(8.0, 8.0))
+                    val lClahe = Mat()
+                    clahe.apply(lChannel, lClahe)
+
+                    labChannels[0] = lClahe
+                    val labClaheMat = Mat()
+                    Core.merge(labChannels, labClaheMat)
+
+                    val rgbClaheMat = Mat()
+                    Imgproc.cvtColor(labClaheMat, rgbClaheMat, Imgproc.COLOR_Lab2RGB)
+
+                    val claheBitmap = createBitmap(originalBitmap.width, originalBitmap.height)
+                    Utils.matToBitmap(rgbClaheMat, claheBitmap)
+
+                    rgbMat.release()
+                    labMat.release()
+                    lChannel.release()
+                    lClahe.release()
+                    labClaheMat.release()
+                    rgbClaheMat.release()
+                    labChannels.clear()
+
+                    val imageProcessor = ImageProcessor.Builder()
+                        .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
+                        .add(NormalizeOp(0f, 255f))
+                        .build()
+
+                    var tensorImage = TensorImage.fromBitmap(claheBitmap)
+                    tensorImage = imageProcessor.process(tensorImage)
+
+                    val outputShape = interpreter.getOutputTensor(0).shape()
+                    val outputDataType = interpreter.getOutputTensor(0).dataType()
+                    val outputBuffer = TensorBuffer.createFixedSize(outputShape, outputDataType)
+
+                    interpreter.run(tensorImage.buffer, outputBuffer.buffer.rewind())
+
+                    val scores = outputBuffer.floatArray
+                    var maxScore = -1f
+                    var maxIndex = -1
+                    scores.forEachIndexed { index, score ->
+                        if (score > maxScore) {
+                            maxScore = score
+                            maxIndex = index
+                        }
+                    }
+
+                    if (maxIndex != -1) {
+                        val resultLabel = labels[maxIndex]
+                        _classificationResult.postValue(Pair(resultLabel, maxScore))
+                    }
+                } catch (e: Exception) {
+                    _errorMsg.postValue("Error Saat melakukan klasifikasi: ${e.message}")
+                    Log.e(TAG, "Error during classification", e)
+                } finally {
+                    val inferenceTime = SystemClock.uptimeMillis() - startTime
+                    _inferenceTime.postValue(inferenceTime)
+                    _isLoading.postValue(false)
                 }
-            } catch (e: Exception) {
-                _errorMsg.postValue("Error Saat melakukan klasifikasi: ${e.message}")
-                Log.e(TAG, "Error during classification", e)
-            } finally {
-                val inferenceTime = SystemClock.uptimeMillis() - startTime
-                _inferenceTime.postValue(inferenceTime)
-                _isLoading.postValue(false)
             }
-
         }
     }
 

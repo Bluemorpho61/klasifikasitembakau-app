@@ -1,0 +1,6 @@
+- `[x]` Add `saveImageToGallery` to `Utils.kt`
+- `[x]` Implement `btnSaveResult` click listener in `ClassifierResultActivity.kt`
+- `[x]` Implement text overlay on saved image in `Utils.kt`
+    - `[x]` Create `addTextToBitmap` helper function
+    - `[x]` Update `saveImageToGallery` to apply overlay
+- `[x]` Verify build and functionality

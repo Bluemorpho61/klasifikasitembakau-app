@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
-        android:text="Silahkan ambil sampel tembakau untuk diproses. Tempatkan sampel pada kertas berwarna putih dan usahakan berada pada pencahayaan yang cukup"
+        android:text="Silahkan ambil sampel tembakau untuk diproses. Tempatkan sampel pada kertas berwarna putih dengan jarak 20 cm dari tembakau dan usahakan berada pada pencahayaan yang cukup"
         android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/imCitra" />
 

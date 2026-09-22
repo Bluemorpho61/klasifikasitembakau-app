@@ -10,6 +10,7 @@
 .DS_Store
 /build
 /OpenCV
+/.artifacts
 /captures
 .externalNativeBuild
 .cxx
